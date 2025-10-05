@@ -1,5 +1,1 @@
-give curl to test this api by cmd
-    @GetMapping("/allemployee")
-    public List<Employee> getAllEmployee(){
-        return employeeRepository.getAllEmployee();
-    }
+https://docs.google.com/document/d/1peFQLjeUdK2jvvkm8sADhnylQ0KLzGznrTEvYNbOe9w/edit?tab=t.0
