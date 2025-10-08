@@ -1,55 +1,344 @@
-https://docs.google.com/document/d/1peFQLjeUdK2jvvkm8sADhnylQ0KLzGznrTEvYNbOe9w/edit?tab=t.0
+2025-10-08T17:19:16.246+05:30  WARN 20832 --- [hrportalnew] [nio-8081-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content-Type 'text/plain;charset=UTF-8' is not supported]
+
+
+package com.finalproject.hrportal.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class SaveInterviewDTO {
+    private String candidateEmail;
+    private String employeeEmail;
+    @JsonDeserialize
+    private String meetingLink;
+    private String interviewDate;
+    private String startTime;
+    private String endTime;
+    private String summary;
+    private String description;
+}
 
 
 
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
 
- :: Spring Boot ::                (v3.5.6)
+ @PatchMapping("/update-interview/details/{applicationId}")
+    public ResponseEntity<String>updateInterviewDetails(@RequestBody SaveInterviewDTO saveInterviewDTO,@PathVariable ("applicationId") int  applicationId){
+        return ResponseEntity.ok(hrService.updateInterviewDetails(saveInterviewDTO,applicationId));
 
-2025-10-05T16:20:52.699+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] c.f.hrportal.HrportalnewApplication      : Starting HrportalnewApplication using Java 17.0.11 with PID 20616 (D:\Hr-portal-backend-main\target\classes started by ADMIN in D:\Hr-portal-backend-main)
-2025-10-05T16:20:52.708+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] c.f.hrportal.HrportalnewApplication      : No active profile set, falling back to 1 default profile: "default"
-2025-10-05T16:20:52.853+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\ADMIN\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.7.0.25.01\ojdbc11-23.7.0.25.01.jar referenced one or more files that do not exist: file:/C:/Users/ADMIN/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.7.0.25.01/oraclepki.jar
-2025-10-05T16:20:52.854+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2025-10-05T16:20:52.854+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2025-10-05T16:20:54.339+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
-2025-10-05T16:20:54.419+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 64 ms. Found 0 JDBC repository interfaces.
-2025-10-05T16:20:55.442+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
-2025-10-05T16:20:55.471+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-10-05T16:20:55.472+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
-2025-10-05T16:20:55.524+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2025-10-05T16:20:55.526+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2668 ms
-Google Calendar not initialized: Address already in use: bind
-2025-10-05T16:20:56.442+05:30  WARN 20616 --- [hrportalnew] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'interviewController' defined in file [D:\Hr-portal-backend-main\target\classes\com\finalproject\hrportal\controller\InterviewController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'interviewSchedulerService' defined in file [D:\Hr-portal-backend-main\target\classes\com\finalproject\hrportal\service\InterviewSchedulerService.class]: Unsatisfied dependency expressed through constructor parameter 0: No qualifying bean of type 'com.google.api.services.calendar.Calendar' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
-2025-10-05T16:20:56.449+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
-2025-10-05T16:20:56.477+05:30  INFO 20616 --- [hrportalnew] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-Google Calendar not initialized: Address already in use: bind
-2025-10-05T16:20:56.534+05:30 ERROR 20616 --- [hrportalnew] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Parameter 0 of constructor in com.finalproject.hrportal.service.InterviewSchedulerService required a bean of type 'com.google.api.services.calendar.Calendar' that could not be found.
-
-The following candidates were found but could not be injected:
-	- User-defined bean method 'googleCalendarService' in 'GoogleCalendarConfig' ignored as the bean value is null
+    }
 
 
-Action:
-
-Consider revisiting the entries above or defining a bean of type 'com.google.api.services.calendar.Calendar' in your configuration.
-
-
-Process finished with exit code 0
+	
+  scheduleInterview(InterviewRequest:InterviewRequest):Observable<string>{
+    return this.httpClient.post("http://localhost:8081/interviews/schedule",InterviewRequest,{responseType:'text'});
+  }
 
 
+  saveMeetingLinkAndNotify(saveInterviewDTO:SaveInterviewDTO,applicationId:number):Observable<string>{
+        return this.httpClient.patch(this.baseurl+"update-interview/details/"+applicationId,{InterviewRequest},{responseType:'text'});
+  }
+
+
+export class SaveInterviewDTO{
+    candidateEmail: string="";
+    employeeEmail: string="";
+      meetingLink: string="";
+      interviewDate:string="";
+      startTime:string="";
+      endTime:string="";
+      summary:string="";
+      description:string="";
+}
+
+
+
+// Submit schedule request
+  submitScheduleInterview() {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.scheduleError = '';
+
+    const requestBody: InterviewRequest = {
+      candidateEmail: this.interviewForm.candidateEmail,
+      employeeEmail: this.interviewForm.employeeEmail,
+      startTime: this.convertToISO8601(this.interviewForm.interviewDate, this.interviewForm.startTime),
+      endTime: this.convertToISO8601(this.interviewForm.interviewDate, this.interviewForm.endTime),
+      summary: this.interviewForm.summary,
+      description: this.interviewForm.description
+    };
+
+    this.saveInterviewDTO.candidateEmail=this.interviewForm.candidateEmail;
+    this.saveInterviewDTO.employeeEmail=this.interviewForm.employeeEmail;
+    this.saveInterviewDTO.startTime=this.interviewForm.startTime
+    this.saveInterviewDTO.interviewDate=this.interviewForm.interviewDate
+    this.saveInterviewDTO.endTime=this.interviewForm.endTime
+    this.saveInterviewDTO.summary=this.interviewForm.summary,
+    this.saveInterviewDTO.description=this.interviewForm.description,
+   
+
+    console.log(this.saveInterviewDTO);
+    
+
+    console.log('Sending interview request:', requestBody);
+
+    if(this.selectedCandidate!=null){
+    this.applicationId=this.selectedCandidate.applicationId;
+    }
+    console.log(this.applicationId);
+    
+    this.hrService.scheduleInterview(requestBody).subscribe({
+      next: (response: any) => {
+        console.log('Interview scheduled successfully:', response);
+        this.zoomMeetingLink = response;
+        this.saveInterviewDTO.meetingLink=response;
+        this.showMeetingLink = true;
+        this.getAllShortlistedCandidates(this.loginHrId);
+      },
+      error: (err) => {
+        console.error('Error scheduling interview:', err);
+        this.scheduleError = err.error?.message || 'Failed to schedule interview. Please try again.';
+      }
+    });
+  }
+
+  // Save meeting link to database and notify
+  notifyCandidate() {
+    if (!this.zoomMeetingLink || !this.selectedCandidate) {
+      return;
+    }
+    console.log(this.saveInterviewDTO);
+    
+    this.hrService.saveMeetingLinkAndNotify(this.saveInterviewDTO,this.applicationId).subscribe({
+      next: (response) => {
+
+        console.log('Notification sent successfully:', response);
+        console.log(this.saveInterviewDTO);
+        alert('Meeting link saved and candidate notified successfully!');
+        this.closeScheduleModal();
+        this.getAllShortlistedCandidates(this.loginHrId);
+      },
+      error: (err) => {
+        console.error('Error sending notification:', err);
+        alert('Failed to send notification. Please try again.');
+      }
+    });
+  }
+
+
+
+<!-- No Results Message -->
+  <div *ngIf="filterShortlistedCandidates.length === 0" class="no-results">
+    <i class="fas fa-inbox fa-3x"></i>
+    <p>No candidates found matching your criteria.</p>
+  </div>
+</div>
+
+<!-- Schedule Interview Modal -->
+<div class="modal-overlay" *ngIf="showScheduleModal" (click)="closeScheduleModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-calendar-alt"></i>
+        Schedule {{ interviewRound }}
+      </h2>
+      <button class="modal-close" (click)="closeScheduleModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Candidate Info Banner -->
+      <div class="candidate-info-banner" *ngIf="selectedCandidate">
+        <div class="banner-avatar">{{ getInitials(selectedCandidate.fullName) }}</div>
+        <div class="banner-details">
+          <h3>{{ selectedCandidate.fullName }}</h3>
+          <p>{{ selectedCandidate.title }} • {{ selectedCandidate.totalExperience }} years exp</p>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <form class="interview-form" *ngIf="!showMeetingLink">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-user"></i> Candidate Email
+            </label>
+            <input 
+              type="email" 
+              class="form-input" 
+              [(ngModel)]="interviewForm.candidateEmail"
+              name="candidateEmail"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-user-tie"></i> Interviewer Email
+            </label>
+            <input 
+              type="email" 
+              class="form-input" 
+              [(ngModel)]="interviewForm.employeeEmail"
+              name="employeeEmail"
+              placeholder="interviewer@company.com"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-calendar"></i> Interview Date
+            </label>
+            <input 
+              type="date" 
+              class="form-input" 
+              [(ngModel)]="interviewForm.interviewDate"
+              name="interviewDate"
+              [min]="getTomorrowDate()"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-clock"></i> Start Time
+            </label>
+            <input 
+              type="time" 
+              class="form-input" 
+              [(ngModel)]="interviewForm.startTime"
+              name="startTime"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-clock"></i> End Time
+            </label>
+            <input 
+              type="time" 
+              class="form-input" 
+              [(ngModel)]="interviewForm.endTime"
+              name="endTime"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-heading"></i> Summary
+          </label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="interviewForm.summary"
+            name="summary"
+            placeholder="e.g., Technical Interview - Backend Developer"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-align-left"></i> Description
+          </label>
+          <textarea 
+            class="form-textarea" 
+            [(ngModel)]="interviewForm.description"
+            name="description"
+            rows="4"
+            placeholder="Enter interview description and topics to be discussed..."
+            required
+          ></textarea>
+        </div>
+
+        <div class="error-message" *ngIf="scheduleError">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ scheduleError }}
+        </div>
+      </form>
+
+      <!-- Meeting Link Display -->
+      <div class="meeting-link-container" *ngIf="showMeetingLink">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 class="success-title">Interview Scheduled Successfully!</h3>
+        <p class="success-message">The Zoom meeting has been created. Share this link with the candidate.</p>
+        
+        <div class="meeting-link-box">
+          <label class="meeting-link-label">
+            <i class="fas fa-video"></i> Zoom Meeting Link
+          </label>
+          <div class="meeting-link-display">
+            <input 
+              type="text" 
+              class="meeting-link-input" 
+              [value]="zoomMeetingLink" 
+              readonly
+            />
+            <button 
+              class="copy-btn" 
+              (click)="copyToClipboard(zoomMeetingLink)"
+              title="Copy to clipboard"
+            >
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="meeting-details">
+          <div class="detail-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>{{ interviewForm.interviewDate | date: 'fullDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-clock"></i>
+            <span>{{ interviewForm.startTime }} - {{ interviewForm.endTime }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        class="btn btn-secondary" 
+        (click)="closeScheduleModal()"
+      >
+        <i class="fas fa-times"></i> Cancel
+      </button>
+
+      <button 
+        class="btn btn-success" 
+        (click)="submitScheduleInterview()"
+        *ngIf="!showMeetingLink"
+      >
+        <i class="fas fa-calendar-check"></i>
+        Schedule Interview
+      </button>
+
+      <button 
+        class="btn btn-primary" 
+        (click)="notifyCandidate()"
+        *ngIf="showMeetingLink"
+      >
+        <i class="fas fa-paper-plane"></i> Save 
+      </button>
+    </div>
+  </div>
+
+
+  
