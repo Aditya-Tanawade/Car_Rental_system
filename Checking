@@ -1,163 +1,92 @@
-export class ShortlistedCandidatesDTO{
-    candidateId:number=0;
-     email:string="";
-     fullName:string="";
-    gender:string="";
-     expectedCtc:number=0;
-     resumePath:string="";
-    totalExperience:number=0;
-     noticePeriod:number=0;
-     skills:string="";
-     profileRole:string="";
-     applicationId:number=0;
-     appliedAt:string="";
-    jobRequestId:number=0;
-     title:string="";
-    interviewStatus:string="";
-    remarks:string="";
-    score:number=0;
-    teamLeaderId:string="";
-    projectManagerId:string="";
-    hrId:string="";
-}
+<section class="applications-header">
+    <div class="header-content">
+      <h1 class="page-title">Pending  Interviews</h1>
+      <p class="page-subtitle">Pending Interviews Of Selected Candidates</p>
+      </div>
+      </section>
+<div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Interview Today</div>
+                                <div class="card-subtitle">Round 2 - Frontend Developer</div>
+                            </div>
+                            <span class="status-badge status-interview">2:00 PM</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="candidate-profile">
+                                <div class="candidate-avatar">JS</div>
+                                <div class="candidate-info">
+                                    <h4>John Smith</h4>
+                                    <p>Passed Round 1 with Sarah Johnson</p>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Position:</span>
+                                <span class="info-value">React Developer</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Round 1 Score:</span>
+                                <span class="info-value">8.5/10</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-video"></i> Start Interview
+                            </button>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> View Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
 
 
-import { Component } from '@angular/core';
-import { HrService } from '../../service/hr-service';
-import { ShortlistedCandidatesDTO } from '../../dto/ShortlistedCandidatesDTO';
-import { FormsModule } from '@angular/forms';
+
 import { CommonModule } from '@angular/common';
-import { SaveInterviewDTO } from '../../dto/SaveInterviewDTO';
-import { CandidateService } from '../../service/candidateService';
-
-interface InterviewRequest {
-  candidateEmail: string;
-  employeeEmail: string;
-  startTime: string;
-  endTime: string;
-  summary: string;
-  description: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ProjectManagerInterviewDTO } from '../../dto/ProjectManagerInterviewDTO';
+import { PmService } from '../../service/pm-service';
+import { FillAssesmentFromDTO } from '../../dto/FillAssesmentFromDTO';
 
 @Component({
-  selector: 'app-hr-interviews',
-  imports: [FormsModule, CommonModule],
-  templateUrl: './hr-interviews.html',
-  styleUrl: './hr-interviews.css'
+  selector: 'app-pm-pending-interviews',
+  imports: [FormsModule,CommonModule],
+  templateUrl: './pm-pending-interviews.html',
+  styleUrl: './pm-pending-interviews.css'
 })
-export class HrInterviews {
-
-  countTotalShortlisted: number = 0;
-  countAssiignedInterviews: number = 0;
-  countSelectedCandidates: number = 0;
-  countRejectedCandidates: number = 0;
-  shortlistedCandidates: ShortlistedCandidatesDTO[] = [];
-  filterShortlistedCandidates: ShortlistedCandidatesDTO[] = [];
-  applicationId: number = 0;
-  // interviewRequest:InterviewRequest=new InterviewRequest();
-  interviewerEmail:string="";
-  loginHrId: string = "";
-  selectedFilter: string = 'all';
-
-  showScheduleModal: boolean = false;
-  selectedCandidate: ShortlistedCandidatesDTO | null = null;
-  interviewRound: string = 'Round 1';
-
+export class PmPendingInterviews implements OnInit {
   
-  saveInterviewDTO: SaveInterviewDTO = new SaveInterviewDTO();
+
+  pmInterviewDto:ProjectManagerInterviewDTO[]=[];
+  fillAssesmentFormDto:FillAssesmentFromDTO=new FillAssesmentFromDTO();
+  loginPmId:string="";
 
 
-  interviewForm = {
-    candidateEmail: '',
-    employeeEmail: '',
-    interviewDate: '',
-    startTime: '',
-    endTime: '',
-    summary: '',
-    description: ''
-  };
+  constructor(private pmService:PmService){}
 
-  zoomMeetingLink: string = '';
-  showMeetingLink: boolean = false;
-  scheduleError: string = '';
-  interviewDate: string = "";
-  startTime: string = "";
-  endTime: string = "";
-  summary: string = "";
-  description: string = "";
-
-  constructor(private hrService: HrService,private profileService:CandidateService) { }
 
   ngOnInit(): void {
-     const hrIdSession = sessionStorage.getItem('loginId');
-    if (hrIdSession) {
-      this.loginHrId = hrIdSession;
-    console.log('Login Hr Id retrieved from session storage:', this.loginHrId);
+    const pmIdSession = sessionStorage.getItem('loginId');
+    if (pmIdSession) {
+      this.loginPmId = pmIdSession;
+    console.log('Login Pm Id retrieved from session storage:', this.loginPmId);
     } else {
-      console.log('No Hr Id found in session storage.');
+      console.log('No Pm Id found in session storage.');
     }
-
-    this.getCountOfShortlistedCandidates(this.loginHrId);
-    this.getCountOfAssignedInterview(this.loginHrId);
-    this.getCountOfSelectedCandidates(this.loginHrId);
-    this.getCountOfRejectedCandidates(this.loginHrId);
-    this.getAllShortlistedCandidates(this.loginHrId);
+    this.getAllPendingInterviewsByPmId(this.loginPmId);
   }
 
-  getCountOfShortlistedCandidates(loginHrId: string) {
-    this.hrService.getCountOfShortlistedCandidates(loginHrId).subscribe({
-      next: (data: number) => {
-        console.log('Count OF ShortlistedCandidates From API', data);
-        this.countTotalShortlisted = data;
-      },
-      error: (err) => {
-        console.error("Exception occurred while calling API", err.error);
-      }
-    });
-  }
 
-  getCountOfAssignedInterview(loginHrId: string) {
-    this.hrService.getCountOfAssignedInterview(loginHrId).subscribe({
-      next: (data: number) => {
-        console.log('Count OF Assigned Interviews From API', data);
-        this.countAssiignedInterviews = data;
-      },
-      error: (err) => {
-        console.error("Exception occurred while calling API", err.error);
-      }
-    });
-  }
 
-  getCountOfSelectedCandidates(loginHrId: string) {
-    this.hrService.getCountOfSelectedCandidates(loginHrId).subscribe({
-      next: (data: number) => {
-        console.log('Count OF Selected Candidates From API', data);
-        this.countSelectedCandidates = data;
-      },
-      error: (err) => {
-        console.error("Exception occurred while calling API", err.error);
-      }
-    });
-  }
-
-  getCountOfRejectedCandidates(loginHrId: string) {
-    this.hrService.getCountOfRejectedCandidates(loginHrId).subscribe({
-      next: (data: number) => {
-        console.log('Count OF Rejected Candidates From API', data);
-        this.countRejectedCandidates = data;
-      },
-      error: (err) => {
-        console.error("Exception occurred while calling API", err.error);
-      }
-    });
-  }
-
-  getAllShortlistedCandidates(loginHrId: string) {
-    this.hrService.getAllShortlistedCandidates(loginHrId).subscribe({
+  getAllPendingInterviewsByPmId(loginPmId: string) {
+    this.pmService.getAllPendingInterviewsByPmId(loginPmId).subscribe({
       next: (data) => {
-        console.log('All Candidates From API ', data);
-        this.shortlistedCandidates = data;
-        this.filterShortlistedCandidates = data;
+        console.log('All Interviews  From API ', data);
+        this.pmInterviewDto=data;
       },
       error: (err) => {
         console.error("Exception occurred while calling API", err);
@@ -168,935 +97,61 @@ export class HrInterviews {
     });
   }
 
-  getInitials(fullName: string): string {
-    if (!fullName) return '??';
-    const names = fullName.split(' ');
-    if (names.length >= 2) {
-      return (names[0][0] + names[1][0]).toUpperCase();
-    }
-    return fullName.substring(0, 2).toUpperCase();
-  }
 
-  formatDate(dateString: string): string {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  getSkillsArray(skills: string): string[] {
-    if (!skills) return [];
-    return skills.split(',').map(skill => skill.trim()).slice(0, 4);
-  }
-
-  statusLabelMap: { [key: string]: string } = {
-    'PENDING': 'Shortlisted',
-    'INTERVIEW1_CLEARED': 'Round 1 Cleared',
-    'INTERVIEW2_CLEARED': 'Round 2 Cleared',
-    'HR_CLEARED': 'HR Round Cleared',
-    'INTERVIEW1_REJECTED': 'Round 1 Rejected',
-    'INTERVIEW2_REJECTED': 'Round 2 Rejected',
-    'HR_REJECTED': 'HR Round Rejected'
-  };
-
-  getStatusLabel(interviewStatus: string): string {
-    return this.statusLabelMap[interviewStatus] || interviewStatus;
-  }
-
-  getStatusBadgeClass(interviewStatus: string): string {
-    if (interviewStatus === 'PENDING') return 'status-badge-pending';
-    if (interviewStatus.includes('CLEARED') || interviewStatus === 'HR_CLEARED') return 'status-badge-cleared';
-    if (interviewStatus.includes('REJECTED')) return 'status-badge-rejected';
-    return 'status-badge-pending';
-  }
-
-  applyFilter(filter: string) {
-    this.selectedFilter = filter;
-
-    switch (filter) {
-      case 'assigned':
-        this.filterShortlistedCandidates = this.shortlistedCandidates.filter(
-          candidate => candidate.interviewStatus !== 'PENDING'
-        );
-        break;
-      case 'selected':
-        this.filterShortlistedCandidates = this.shortlistedCandidates.filter(
-          candidate => candidate.interviewStatus === 'INTERVIEW1_CLEARED' ||
-            candidate.interviewStatus === 'INTERVIEW2_CLEARED' ||
-            candidate.interviewStatus === 'HR_CLEARED'
-        );
-        break;
-      case 'rejected':
-        this.filterShortlistedCandidates = this.shortlistedCandidates.filter(
-          candidate => candidate.interviewStatus === 'INTERVIEW1_REJECTED' ||
-            candidate.interviewStatus === 'INTERVIEW2_REJECTED' ||
-            candidate.interviewStatus === 'HR_REJECTED'
-        );
-        break;
-      case 'all':
-      default:
-        this.filterShortlistedCandidates = [...this.shortlistedCandidates];
-    }
-  }
-
-  isPending(interviewStatus: string): boolean {
-    return interviewStatus === 'PENDING';
-  }
-
-  isInterview1Cleared(interviewStatus: string): boolean {
-    return interviewStatus === 'INTERVIEW1_CLEARED';
-  }
-
-  isInterview2Cleared(interviewStatus: string): boolean {
-    return interviewStatus === 'INTERVIEW2_CLEARED';
-  }
-
-  isHRCleared(interviewStatus: string): boolean {
-    return interviewStatus === 'HR_CLEARED';
-  }
-
-  isRejected(interviewStatus: string): boolean {
-    return interviewStatus.includes('REJECTED');
-  }
-
-  // Open Schedule Modal
-  scheduleInterview(candidate: ShortlistedCandidatesDTO) {
-    this.selectedCandidate = candidate;
-    this.interviewRound = 'Round 1';
-    this.openScheduleModal();
-  }
-
-  scheduleRound2(candidate: ShortlistedCandidatesDTO) {
-    this.selectedCandidate = candidate;
-    this.interviewRound = 'Round 2';
-    this.openScheduleModal();
-  }
-
-  scheduleHRRound(candidate: ShortlistedCandidatesDTO) {
-    this.selectedCandidate = candidate;
-    this.interviewRound = 'HR Round';
-    this.openScheduleModal();
-  }
-
-  openScheduleModal() {
-    if (this.selectedCandidate) {
-      // Pre-fill form fields
-      this.interviewForm.candidateEmail = this.selectedCandidate.email;
-      this.interviewForm.employeeEmail = '';
-      this.interviewForm.interviewDate = this.getTomorrowDate();
-      this.interviewForm.startTime = '10.30';
-      this.interviewForm.endTime = '11:00';
-      this.interviewForm.summary = `${this.interviewRound} - ${this.selectedCandidate.title}`;
-      this.interviewForm.description = `Interview with ${this.selectedCandidate.fullName} for the position of ${this.selectedCandidate.title}. Experience: ${this.selectedCandidate.totalExperience} years.`;
-      this.showScheduleModal = true;
-      this.showMeetingLink = false;
-      this.zoomMeetingLink = '';
-      this.scheduleError = '';
-    }
-
-  }
-
-
-
-  closeScheduleModal() {
-    this.showScheduleModal = false;
-    this.selectedCandidate = null;
-    this.resetForm();
-  }
-
-  resetForm() {
-    this.interviewForm = {
-      candidateEmail: '',
-      employeeEmail: '',
-      interviewDate: '',
-      startTime: '',
-      endTime: '',
-      summary: '',
-      description: ''
-    };
-    this.showMeetingLink = false;
-    this.zoomMeetingLink = '';
-    this.scheduleError = '';
-  }
-
-  getTomorrowDate(): string {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
-  }
-
-  // Convert date and time to ISO 8601 format with IST timezone
-  convertToISO8601(date: string, time: string): string {
-    // Combine date and time
-    const dateTimeString = `${date}T${time}:00+05:30`;
-    return dateTimeString;
-  }
-
-  // Validate form
-  validateForm(): boolean {
-    if (!this.interviewForm.candidateEmail || !this.interviewForm.employeeEmail) {
-      this.scheduleError = 'Please fill in all email fields';
-      return false;
-    }
-    if (!this.interviewForm.interviewDate || !this.interviewForm.startTime || !this.interviewForm.endTime) {
-      this.scheduleError = 'Please fill in all date and time fields';
-      return false;
-    }
-    if (!this.interviewForm.summary || !this.interviewForm.description) {
-      this.scheduleError = 'Please fill in summary and description';
-      return false;
-    }
-
-    // Validate that end time is after start time
-    const start = new Date(`${this.interviewForm.interviewDate}T${this.interviewForm.startTime}`);
-    const end = new Date(`${this.interviewForm.interviewDate}T${this.interviewForm.endTime}`);
-    if (end <= start) {
-      this.scheduleError = 'End time must be after start time';
-      return false;
-    }
-
-    this.scheduleError = '';
-    return true;
-  }
-
-  // Submit schedule request
-  submitScheduleInterview() {
-    if (!this.validateForm()) {
-      return;
-    }
-
-    this.scheduleError = '';
-
-    const requestBody: InterviewRequest = {
-      candidateEmail: this.interviewForm.candidateEmail,
-      employeeEmail: this.interviewForm.employeeEmail,
-      startTime: this.convertToISO8601(this.interviewForm.interviewDate, this.interviewForm.startTime),
-      endTime: this.convertToISO8601(this.interviewForm.interviewDate, this.interviewForm.endTime),
-      summary: this.interviewForm.summary,
-      description: this.interviewForm.description
-    };
-
-    this.saveInterviewDTO.candidateEmail = this.interviewForm.candidateEmail;
-    this.saveInterviewDTO.employeeEmail = this.interviewForm.employeeEmail;
-    this.saveInterviewDTO.startTime = this.interviewForm.startTime
-    this.saveInterviewDTO.interviewDate = this.interviewForm.interviewDate
-    this.saveInterviewDTO.endTime = this.interviewForm.endTime
-    this.saveInterviewDTO.summary = this.interviewForm.summary,
-      this.saveInterviewDTO.description = this.interviewForm.description,
-
-
-      console.log(this.saveInterviewDTO);
-
-
-    console.log('Sending interview request:', requestBody);
-
-    if (this.selectedCandidate != null) {
-      this.applicationId = this.selectedCandidate.applicationId;
-    }
-    console.log(this.applicationId);
-
-    this.hrService.scheduleInterview(requestBody).subscribe({
-      next: (response: any) => {
-        console.log('Interview scheduled successfully:', response);
-        this.zoomMeetingLink = response;
-        this.saveInterviewDTO.meetingLink = response;
-        this.showMeetingLink = true;
-        this.getAllShortlistedCandidates(this.loginHrId);
+  fillAssesmentForm(interviewId: number) {
+    this.pmService.fillAssesmentForm(interviewId,this.fillAssesmentFormDto).subscribe({
+      next: (data) => {
+        console.log('Fill Assemenet FOrm', data);
       },
       error: (err) => {
-        console.error('Error scheduling interview:', err);
-        this.scheduleError = err.error?.message || 'Failed to schedule interview. Please try again.';
-      }
-    });
-  }
-
-
-  sendOfferLetter(candidate: ShortlistedCandidatesDTO){
-      this.selectedCandidate = candidate;
-       this.hrService.sendOfferLetter(candidate).subscribe({
-      next: (response: any) => {
-        console.log('Offer Letter Send Succesfully:', response);
-        alert(response);
-        this.getAllShortlistedCandidates(this.loginHrId);
+        console.error("Exception occurred while calling API", err);
       },
-      error: (err) => {
-        console.log(err);
-      }
-    });
-      
-
-  }
-
-
-  // Save meeting link to database and notify
-  notifyCandidate() {
-    if (!this.zoomMeetingLink || !this.selectedCandidate) {
-      return;
-    }
-    console.log(this.saveInterviewDTO);
-    console.log("This is applications Id", this.applicationId);
-
-    // OG 
-    //   this.hrService.saveMeetingLinkAndNotify(this.saveInterviewDTO,this.applicationId).subscribe({
-    //     next: (response) => {
-
-    //       console.log('Notification sent successfully:', response);
-    //       console.log(this.saveInterviewDTO);
-    //       console.log(response);
-
-    //       alert('Meeting link saved and candidate notified successfully!');
-    //       this.closeScheduleModal();
-    //       this.getAllShortlistedCandidates(this.loginHrId);
-    //     },
-    //     error: (err) => {
-    //       console.error('Error sending notification:', err);
-    //       alert('Failed to send notification. Please try again.');
-    //     }
-    //   });
-    // }
-
-    // Gemini
-    this.hrService.saveMeetingLinkAndNotify(this.saveInterviewDTO, this.applicationId).subscribe({
-      next: (response) => {
-        console.log('Notification sent successfully:', response);
-        console.log(this.saveInterviewDTO); // You should now see the data here
-        console.log(response);
-        alert('Meeting link saved and candidate notified successfully!');
-        this.closeScheduleModal();
-        this.getAllShortlistedCandidates(this.loginHrId);
-      },
-      error: (err) => {
-        console.error('Error sending notification:', err);
-        alert('Failed to send notification. Please try again.');
+      complete: () => {
+        console.log("Data retrieval completed successfully");
       }
     });
   }
 
 
-
-  // downloadResume(): void {
-  //   if (!this.hasResume) {
-  //     alert('No resume available to download');
-  //     return;
-  //   }
-  //   this.profileService.downloadResume(this.candidateId).subscribe({
-  //     next: (blob) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const link = document.createElement('a');
-  //       link.href = url;
-  //       link.download = this.resumeFileName || `resume_${this.candidateId}.pdf`;
-  //       link.click();
-  //       window.URL.revokeObjectURL(url);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error downloading resume:', error);
-  //       alert('Failed to download resume');
-  //     }
-  //   });
-  // }
-
-  // openResume(): void {
-  //   if (!this.hasResume) {
-  //     alert('No resume available');
-  //     return;
-  //   }
-
-  //   this.profileService.downloadResume(this.candidateId).subscribe({
-  //     next: (blob) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       window.open(url, '_blank');
-  //       setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error opening resume:', error);
-  //       alert('Failed to open resume');
-  //     }
-  //   });
-  // }
-
-
-
-
-    downloadResume(candidateId:number) {
-      // if (candidate.resumePath) {
-      //   console.log('Download Resume:', candidate.resumePath);
-      //   window.open(candidate.resumePath, '_blank');
-      // }
-           this.profileService.downloadResume(candidateId).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-      },
-      error: (error) => {
-        console.error('Error opening resume:', error);
-        alert('Failed to open resume');
-      }
-    });
-    }
-
-    // Copy meeting link to clipboard
-    copyToClipboard(text: string) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Meeting link copied to clipboard!');
-        }).catch(err => {
-          console.error('Failed to copy text: ', err);
-          this.fallbackCopyTextToClipboard(text);
-        });
-      } else {
-        this.fallbackCopyTextToClipboard(text);
-      }
-    }
-
-    // Fallback method for older browsers
-    fallbackCopyTextToClipboard(text: string) {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.top = '0';
-      textArea.style.left = '0';
-      textArea.style.width = '2em';
-      textArea.style.height = '2em';
-      textArea.style.padding = '0';
-      textArea.style.border = 'none';
-      textArea.style.outline = 'none';
-      textArea.style.boxShadow = 'none';
-      textArea.style.background = 'transparent';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          alert('Meeting link copied to clipboard!');
-        } else {
-          alert('Failed to copy text');
-        }
-      } catch (err) {
-        console.error('Fallback: Could not copy text: ', err);
-        alert('Failed to copy text');
-      }
-      document.body.removeChild(textArea);
-    }
-
-
-
-    getInterviewerEmail(employeeId: string) {
-    this.hrService.getInterviewerEmail(employeeId).subscribe({
-      next: (data: string) => {
-        console.log('Email From Backend API', data);
-        this.interviewerEmail = data;
-      },
-      error: (err) => {
-        console.error("Exception occurred while calling API", err.error);
-      }
-    });
-  }
-  }
+  
 
 
 
 
 
-<div class="applications-container">
-  <!-- Header Section -->
-  <section class="applications-header">
-    <div class="header-content">
-      <h1 class="page-title">Manage Interviews</h1>
-      <p class="page-subtitle">Manage Interviews Of ShortListed Candidates</p>
-      <div class="applications-stats">
-        <div class="stat-item stats-total">
-          <div class="stat-number">{{ countTotalShortlisted }}</div>
-          <div class="stat-label">Total ShortListed</div>
-        </div>
-        <div class="stat-item stats-pending">
-          <div class="stat-number">{{ countAssiignedInterviews }}</div>
-          <div class="stat-label">Assigned Interview</div>
-        </div>
-        <div class="stat-item stats-approved">
-          <div class="stat-number">{{ countSelectedCandidates }}</div>
-          <div class="stat-label">Selected</div>
-        </div>
-        <div class="stat-item stats-declined">
-          <div class="stat-number">{{ countRejectedCandidates }}</div>
-          <div class="stat-label">Rejected</div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Filter Buttons -->
-  <section class="filter-buttons">
-    <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="applyFilter('all')">
-      All
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'assigned'" (click)="applyFilter('assigned')">
-      Assigned Interviews
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'selected'" (click)="applyFilter('selected')">
-      Selected
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'rejected'" (click)="applyFilter('rejected')">
-      Rejected
-    </button>
-  </section>
 
-  <!-- Candidate Cards Grid -->
-  <div class="cards-grid" *ngIf="filterShortlistedCandidates.length > 0">
+
+}
+
+export class ProjectManagerInterviewDTO{
+    candidateName:string="";
+     skills:string="";
+     role:string="";
+     interviewDate:string="";
+     googleMeetLink:string="";
+     interviewId:number=0;
+     candidateId:number=0;
+     jobRequestId:number=0;
+     startTime:string="";
+     endTime:string="";
+     roundNumber:number=0;
+     status:string="";
+     remarks:string="";
+     score:number=0;
+    jobRequestTitle:string="";
+}
+
+
+
+export class FillAssesmentFromDTO{
+    status:string="";
+    remarks:string="";
+    score:number=0;
     
-    <div class="candidate-card" *ngFor="let candidate of filterShortlistedCandidates" [ngClass]="{'card-rejected': isRejected(candidate.interviewStatus)}">
-      
-      <!-- Card for PENDING status -->
-      <ng-container *ngIf="isPending(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-pending">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Applied For:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Applied Date:</span>
-            <span class="info-value">{{ formatDate(candidate.appliedAt) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Expected Salary:</span>
-            <span class="info-value">₹{{ candidate.expectedCtc }} LPA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Notice Period:</span>
-            <span class="info-value">{{ candidate.noticePeriod }} days</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-success btn-sm" (click)="scheduleInterview(candidate)">
-            <i class="fas fa-calendar"></i> Schedule Interview
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- Card for INTERVIEW1_CLEARED status -->
-      <ng-container *ngIf="isInterview1Cleared(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-cleared">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Position:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 1 Score:</span>
-            <span class="info-value score-highlight">{{ candidate.score }}/10</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 1 Remarks:</span>
-            <span class="info-value">{{ candidate.remarks || 'No remarks provided' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Expected CTC:</span>
-            <span class="info-value">₹{{ candidate.expectedCtc }} LPA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Next Step:</span>
-            <span class="info-value">Schedule Round 2 Interview</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-primary btn-sm" (click)="scheduleRound2(candidate)">
-            <i class="fas fa-calendar-check"></i> Schedule Round 2
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- Card for INTERVIEW2_CLEARED status -->
-      <ng-container *ngIf="isInterview2Cleared(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-cleared">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Position:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 2 Score:</span>
-            <span class="info-value score-highlight">{{ candidate.score }}/10</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 2 Remarks:</span>
-            <span class="info-value">{{ candidate.remarks || 'No remarks provided' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Overall Performance:</span>
-            <span class="info-value">Strong candidate for HR discussion</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Next Step:</span>
-            <span class="info-value">Schedule HR Round</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-primary btn-sm" (click)="scheduleHRRound(candidate)">
-            <i class="fas fa-user-tie"></i> Schedule HR Round
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- Card for HR_CLEARED status -->
-      <ng-container *ngIf="isHRCleared(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar selected-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-selected">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content card-content-selected">
-          <div class="info-row">
-            <span class="info-label">Position:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Final HR Score:</span>
-            <span class="info-value score-highlight-final">{{ candidate.score }}/10</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">HR Remarks:</span>
-            <span class="info-value">{{ candidate.remarks || 'Excellent candidate' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Expected CTC:</span>
-            <span class="info-value">₹{{ candidate.expectedCtc }} LPA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Notice Period:</span>
-            <span class="info-value">{{ candidate.noticePeriod }} days</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Next Step:</span>
-            <span class="info-value">Distribute Offer Letter </span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-success btn-sm"  (click)="sendOfferLetter(candidate)">
-            <i class="fas fa-envelope"></i> Send Offer Letter
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- Card for REJECTED statuses -->
-      <ng-container *ngIf="isRejected(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar rejected-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-rejected">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Position:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Score:</span>
-            <span class="info-value">{{ candidate.score }}/10</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Rejection Reason:</span>
-            <span class="info-value">{{ candidate.remarks || 'Did not meet requirements' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Date:</span>
-            <span class="info-value">{{ formatDate(candidate.appliedAt) }}</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-outline btn-sm" (click)="downloadResume(candidate.candidateId)" *ngIf="candidate.resumePath">
-            <i class="fas fa-download"></i> Resume
-          </button>
-        </div>
-      </ng-container>
-
-    </div>
-  </div>
-
-  <!-- No Results Message -->
-  <div *ngIf="filterShortlistedCandidates.length === 0" class="no-results">
-    <i class="fas fa-inbox fa-3x"></i>
-    <p>No candidates found matching your criteria.</p>
-  </div>
-</div>
-
-<!-- Schedule Interview Modal -->
-<div class="modal-overlay" *ngIf="showScheduleModal" (click)="closeScheduleModal()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2 class="modal-title">
-        <i class="fas fa-calendar-alt"></i>
-        Schedule {{ interviewRound }}
-      </h2>
-      <button class="modal-close" (click)="closeScheduleModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <!-- Candidate Info Banner -->
-      <div class="candidate-info-banner" *ngIf="selectedCandidate">
-        <div class="banner-avatar">{{ getInitials(selectedCandidate.fullName) }}</div>
-        <div class="banner-details">
-          <h3>{{ selectedCandidate.fullName }}</h3>
-          <p>{{ selectedCandidate.title }} • {{ selectedCandidate.totalExperience }} years exp</p>
-        </div>
-      </div>
-
-      <!-- Form Section -->
-      <form class="interview-form" *ngIf="!showMeetingLink">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-user"></i> Candidate Email
-            </label>
-            <input 
-              type="email" 
-              class="form-input" 
-              [(ngModel)]="interviewForm.candidateEmail"
-              name="candidateEmail"
-              readonly
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-user-tie"></i> Interviewer Email
-            </label>
-            <input  
-              type="email" 
-              class="form-input" 
-              [(ngModel)]="getInterviewerEmail(candidate.teamLeadId)"
-              name="employeeEmail"
-              placeholder="interviewer@company.com"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-calendar"></i> Interview Date
-            </label>
-            <input 
-              type="date" 
-              class="form-input" 
-              [(ngModel)]="interviewForm.interviewDate"
-              name="interviewDate"
-              [min]="getTomorrowDate()"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-clock"></i> Start Time
-            </label>
-            <input 
-              type="time" 
-              class="form-input" 
-              [(ngModel)]="interviewForm.startTime"
-              name="startTime"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-clock"></i> End Time
-            </label>
-            <input 
-              type="time" 
-              class="form-input" 
-              [(ngModel)]="interviewForm.endTime"
-              name="endTime"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">
-            <i class="fas fa-heading"></i> Summary
-          </label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="interviewForm.summary"
-            name="summary"
-            placeholder="e.g., Technical Interview - Backend Developer"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">
-            <i class="fas fa-align-left"></i> Description
-          </label>
-          <textarea 
-            class="form-textarea" 
-            [(ngModel)]="interviewForm.description"
-            name="description"
-            rows="4"
-            placeholder="Enter interview description and topics to be discussed..."
-            required
-          ></textarea>
-        </div>
-
-        <div class="error-message" *ngIf="scheduleError">
-          <i class="fas fa-exclamation-circle"></i>
-          {{ scheduleError }}
-        </div>
-      </form>
-
-      <!-- Meeting Link Display -->
-      <div class="meeting-link-container" *ngIf="showMeetingLink">
-        <div class="success-icon">
-          <i class="fas fa-check-circle"></i>
-        </div>
-        <h3 class="success-title">Interview Scheduled Successfully!</h3>
-        <p class="success-message">The Zoom meeting has been created. Share this link with the candidate.</p>
-        
-        <div class="meeting-link-box">
-          <label class="meeting-link-label">
-            <i class="fas fa-video"></i> Zoom Meeting Link
-          </label>
-          <div class="meeting-link-display">
-            <input 
-              type="text" 
-              class="meeting-link-input" 
-              [value]="zoomMeetingLink" 
-              readonly
-            />
-            <button 
-              class="copy-btn" 
-              (click)="copyToClipboard(zoomMeetingLink)"
-              title="Copy to clipboard"
-            >
-              <i class="fas fa-copy"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="meeting-details">
-          <div class="detail-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span>{{ interviewForm.interviewDate | date: 'fullDate' }}</span>
-          </div>
-          <div class="detail-item">
-            <i class="fas fa-clock"></i>
-            <span>{{ interviewForm.startTime }} - {{ interviewForm.endTime }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button 
-        class="btn btn-secondary" 
-        (click)="closeScheduleModal()"
-      >
-        <i class="fas fa-times"></i> Cancel
-      </button>
-
-      <button 
-        class="btn btn-success" 
-        (click)="submitScheduleInterview()"
-        *ngIf="!showMeetingLink"
-      >
-        <i class="fas fa-calendar-check"></i>
-        Schedule Interview
-      </button>
-
-      <button 
-        class="btn btn-primary" 
-        (click)="notifyCandidate()"
-        *ngIf="showMeetingLink"
-      >
-        <i class="fas fa-paper-plane"></i> Save 
-      </button>
-    </div>
-  </div>
-</div>
+}
 
 
-
-now i am getting the data from the backend aSPER MY DTO noW I HAVE METHOND GET EMAIL BY EMPLOYEEiD  in that In the form of schdulue interview i want that if the interview status is pending then pass the team leader id as employeeid and get the employee Email taht is interviewer email 
-
-taht way if my status is interview1_cleared i want to show the projectmanager email baseed on id 
-same for hr if the status is hr_cleared i want to show the hr email by hrid 
-in the html form there is fiel interviewer eemail in that i wnat to show that so i want to fetch there based on the interview status so how i can dod that taht should be read only
+Lets Fix my HTml ANd Ts I want ALl pending interviews Card on my ui ANd Have button fill assesment form and take interview ON clicking the fill Assement Form Should be Opened With validations Status SHould be dropdown 
+selected Rejected and onclick take interview i want to open the google meet link on next tab 
+use success Box and give all css Again becoz i dont have the Css 
