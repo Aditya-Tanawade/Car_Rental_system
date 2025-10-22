@@ -1,139 +1,27 @@
-<div class="applications-container">
-  <!-- Header Section -->
-  <section class="applications-header">
-    <div class="header-content">
-      <h1 class="page-title">Manage Interviews</h1>
-      <p class="page-subtitle">Manage Interviews Of ShortListed Candidates</p>
-      <div class="applications-stats">
-        <div class="stat-item stats-total">
-          <div class="stat-number">{{ countTotalShortlisted }}</div>
-          <div class="stat-label">Total ShortListed</div>
-        </div>
-        <div class="stat-item stats-pending">
-          <div class="stat-number">{{ countAssiignedInterviews }}</div>
-          <div class="stat-label">Assigned Interview</div>
-        </div>
-        <div class="stat-item stats-approved">
-          <div class="stat-number">{{ countSelectedCandidates }}</div>
-          <div class="stat-label">Selected</div>
-        </div>
-        <div class="stat-item stats-declined">
-          <div class="stat-number">{{ countRejectedCandidates }}</div>
-          <div class="stat-label">Rejected</div>
-        </div>
-      </div>
-    </div>
-  </section>
+Got it — here’s a short email for informing after taking leave:
 
-  <!-- Filter Buttons -->
-  <section class="filter-buttons">
-    <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="applyFilter('all')">
-      All
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'assigned'" (click)="applyFilter('assigned')">
-      Assigned Interviews
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'selected'" (click)="applyFilter('selected')">
-      Selected
-    </button>
-    <button class="filter-btn" [class.active]="selectedFilter === 'rejected'" (click)="applyFilter('rejected')">
-      Rejected
-    </button>
-  </section>
 
-  <!-- Candidate Cards Grid -->
-  <div class="cards-grid" *ngIf="filterShortlistedCandidates.length > 0">
-    
-    <div class="candidate-card" *ngFor="let candidate of filterShortlistedCandidates" [ngClass]="{'card-rejected': isRejected(candidate.interviewStatus)}">
-      
-      <!-- Card for PENDING status -->
-      <ng-container *ngIf="isPending(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-pending">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Applied For:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Applied Date:</span>
-            <span class="info-value">{{ formatDate(candidate.appliedAt) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Expected Salary:</span>
-            <span class="info-value">₹{{ candidate.expectedCtc }} LPA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Notice Period:</span>
-            <span class="info-value">{{ candidate.noticePeriod }} days</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-success btn-sm" (click)="scheduleInterview(candidate)">
-            <i class="fas fa-calendar"></i> Schedule Interview
-          </button>
-        </div>
-      </ng-container>
+---
 
-      <!-- Card for INTERVIEW1_CLEARED status -->
-      <ng-container *ngIf="isInterview1Cleared(candidate.interviewStatus)">
-        <div class="candidate-profile">
-          <div class="candidate-avatar">{{ getInitials(candidate.fullName) }}</div>
-          <div class="candidate-info">
-            <h4>{{ candidate.fullName }}</h4>
-            <p>{{ candidate.profileRole || 'Not Specified' }} • {{ candidate.totalExperience }} years experience</p>
-            <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of getSkillsArray(candidate.skills)">
-                {{ skill }}
-              </span>
-            </div>
-          </div>
-          <span class="status-badge status-badge-cleared">{{ getStatusLabel(candidate.interviewStatus) }}</span>
-        </div>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Position:</span>
-            <span class="info-value">{{ candidate.title || 'N/A' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 1 Score:</span>
-            <span class="info-value score-highlight">{{ candidate.score }}/10</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Round 1 Remarks:</span>
-            <span class="info-value">{{ candidate.remarks || 'No remarks provided' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ candidate.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Expected CTC:</span>
-            <span class="info-value">₹{{ candidate.expectedCtc }} LPA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Next Step:</span>
-            <span class="info-value">Schedule Round 2 Interview</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-primary btn-sm" (click)="scheduleRound2(candidate)">
-            <i class="fas fa-calendar-check"></i> Schedule Round 2
+Subject: Leave Taken on [Date]
+
+Dear [Manager’s Name],
+I was unable to attend work on [date] due to [personal reasons/sudden illness].
+Apologies for not informing earlier. Kindly consider this as an informed leave.
+
+Thank you for understanding.
+Aditya Tanawade
+
+
+---
+
+Would you like me to make it sound more formal or more casual (for WhatsApp or friendly tone)?
+
+
+
+          
+          
+          
           </button>
         </div>
       </ng-container>
